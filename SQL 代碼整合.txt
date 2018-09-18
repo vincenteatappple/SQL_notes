@@ -1,0 +1,93 @@
+﻿1. delete duplicate rows
+2. calculate percentage of rows group by a column name
+select GRADE, (COUNT(GRADE)*100 / (SELECT COUNT(*) FROM TABLE) AS SCORE
+FROM MY TABLE
+GROUP BY GRADE
+
+Analysis: here COUNT(GRADE) is the number of rows(grade) e.g. 60
+(SELECT COUNT(*) FROM TABLE) is the number of rows(whole table) e.g. 100
+therefore the value of that column will be 0.6 
+however, the data type of the column is INT o.6 will be displayed as 0 instead
+
+3.calculate percentage of each row's sales value of total values
+
+SELECT NAME, SALES, (SALES*100/(SELECT SUM(SALES) FROM FUCKTEST)) AS PERCENT_
+FROM FUCKTEST
+
+Analysis: here we don't use count because we don't want percentage of rows 
+we want percentage of value of a row compared to the total values
+
+4. find the row with a median value of all
+
+SELECT
+(
+ (SELECT MAX(Score) FROM
+   (SELECT TOP 50 PERCENT Score FROM Posts ORDER BY Score) AS BottomHalf)
+ +
+ (SELECT MIN(Score) FROM
+   (SELECT TOP 50 PERCENT Score FROM Posts ORDER BY Score DESC) AS TopHalf)
+) / 2 AS Median
+
+Analysis: 
+
+獲取MEDIAN 的idea:
+獲取最大50 percentage 數據的minimum value
+獲取最小50 percentage 數據的maximum value
+加起來/2 = median value
+
+先取一個column數據的前50百仙的數據, 
+(SELECT MAX(Score) FROM
+   (SELECT TOP 50 PERCENT Score FROM Posts ORDER BY Score) AS BottomHalf)
+是頭50%數值的最大值
+
+獲取MEDIAN 的idea:
+獲取最大50 percentage 數據的minimum value
+獲取最小50 percentage 數據的maximum value
+加起來/2 = median value
+
+
+FUCKTEST
+NAME SALES
+Greg 50
+fuckboy 99
+JON 30
+JEFF 20
+
+e.g. SELECT MIN(SALES) FROM (SELECT top 50 PERCENT SALES FROM FUCKTEST ORDER BY SALES DESC) AS FUCK 
+this will output 50 from 
+SALES
+99
+50
+
+ (SELECT MAX(Score) FROM
+   (SELECT TOP 50 PERCENT Score FROM Posts ORDER BY Score) AS BottomHalf)
+will output 30 FROM 
+SALES
+30
+20
+
+(30+50)/2 = MEDIAN
+
+5.計算RANKING of a column
+SELECT NAME, SALES, RANK() OVER(ORDER BY SALES DESC) AS RANKING
+
+6.calculate running total
+SELECT NAME, SALES, SUM(SALES) OVER (ORDER BY NAME ASC) AS RUNNING_TOTAL FROM FUCKTEST
+
+use SUM(column_name) OVER (ORDER BY column_name ASC/DESC) AS RUNNING_TOTAL
+
+NOTE* SINCE SQL process a query starting from 'WHERE CLAUSE',
+output of 
+SELECT NAME, SALES, SUM(SALES) OVER (ORDER BY NAME ASC) AS RUNNING_TOTAL FROM FUCKTEST ORDER BY RUNNING_TOTAL DESC
+is different from 
+SELECT NAME, SALES, SUM(SALES) OVER (ORDER BY NAME ASC) AS RUNNING_TOTAL FROM FUCKTEST
+
+7.累績百份比
+SELECT NAME, SALES, (SALES*100/(SELECT SUM(SALES) FROM FUCKTEST)) AS PERCENT_, SUM((SALES*100/(SELECT SUM(SALES) FROM FUCKTEST))) OVER(ORDER BY NAME) AS 累績percent
+FROM FUCKTEST
+
+原理跟running total一樣
+
+
+
+
